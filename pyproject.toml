@@ -1,0 +1,39 @@
+[tool.black]
+line-length = 88
+target_version = ['py37', 'py38', 'py39', 'py310', "py311"]
+exclude = '''
+(
+  /(
+    | \.git
+    | \.venv
+    | \.mypy_cache
+    | \.tox
+  )/
+)
+'''
+
+[tool.isort]
+line_length = 88
+profile = "black"
+
+[tool.poetry]
+name = "ocp-addons-operators-cli"
+version = "1.0.0"
+description = "CLI to install/uninstall Addons/operators on Openshift clusters."
+authors = ["Meni Yakove", "Ruth Netser"]
+
+[tool.poetry.dependencies]
+python = "^3.8"
+colorlog = "*"
+openshift-python-wrapper = "*"
+openshift-python-utilities = "*"
+openshift-cluster-management-python-wrapper = "*"
+click = "*"
+
+[tool.poetry.dev-dependencies]
+ipython = "*"
+ipdb = "*"
+
+[build-system]
+requires = ["poetry-core>=1.0.0"]
+build-backend = "poetry.core.masonry.api"
