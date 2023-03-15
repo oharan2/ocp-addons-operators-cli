@@ -65,14 +65,14 @@ def addon(ctx, addon, token, api_host, cluster, endpoint, timeout, debug):
     help="Addon parameters for installation. each parameter pass as id=value. multiple parameters are allowed",
 )
 @click.pass_context
-def addon_install(ctx, parameters):
+def install(ctx, parameters):
     """Install cluster Addon."""
     timeout = ctx.obj["timeout"]
     cluster_addon = ctx.obj["cluster_addon"]
     _parameters = []
     for parameter in parameters:
         if "=" not in parameter:
-            click.echo(f"parameters should be id=value, got {parameter}")
+            click.echo(f"parameters should be id=value, got {parameter}\n")
             raise click.Abort()
 
         _id, _value = parameter.split("=")
@@ -83,7 +83,7 @@ def addon_install(ctx, parameters):
 
 @addon.command()
 @click.pass_context
-def addon_uninstall(ctx):
+def uninstall(ctx):
     """Uninstall cluster Addon."""
     timeout = ctx.obj["timeout"]
     cluster_addon = ctx.obj["cluster_addon"]

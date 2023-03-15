@@ -12,13 +12,13 @@ def operator(ctx):
 
 @operator.command()
 @click.pass_context
-def operator_install(ctx):
+def install(ctx):
     """Install cluster Operator."""
     print(ctx)
 
 
 @operator.command()
 @click.pass_context
-def operator_uninstall(ctx):
+def uninstall(ctx):
     """Uninstall cluster Operator."""
     print(ctx)

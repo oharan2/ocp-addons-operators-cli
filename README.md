@@ -11,10 +11,10 @@ To pull the image: `podman pull quay.io/<place holder>/ocp-addons-operators-cli`
 
 ```
 podman run quay.io/<place holder>/ocp-addons-operators-cli --help
-podman run quay.io/<place holder>/ocp-addons-operators-cli addon addon-install --help
-podman run quay.io/<place holder>/ocp-addons-operators-cli addon addon-uninstall --help
-podman run quay.io/<place holder>/ocp-addons-operators-cli operator operator-install --help
-podman run quay.io/<place holder>/ocp-addons-operators-cli operator operator-uninstall --help
+podman run quay.io/<place holder>/ocp-addons-operators-cli addon install --help
+podman run quay.io/<place holder>/ocp-addons-operators-cli addon uninstall --help
+podman run quay.io/<place holder>/ocp-addons-operators-cli operator install --help
+podman run quay.io/<place holder>/ocp-addons-operators-cli operator uninstall --help
 ```
 
 ### Addons
@@ -26,7 +26,7 @@ podman run quay.io/<place holder>/ocp-addons-operators-cli \
     -t $OCM_TOKEN \
     -a ocm-addon-test-operator \
     -c cluster-name \
-    addon-install \
+    install \
     -p has-external-resources=false \
     -p aws-cluster-test-param=false
 ```
@@ -39,5 +39,5 @@ podman run quay.io/<place holder>/ocp-addons-operators-cli \
     -t $OCM_TOKEN \
     -a ocm-addon-test-operator \
     -c cluster-name \
-    addon-uninstall
+    uninstall
 ```

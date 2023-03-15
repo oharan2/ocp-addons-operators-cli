@@ -14,16 +14,26 @@ def entry_point():
 if __name__ == "__main__":
     entry_point.add_command(addon.addon)
     entry_point.add_command(operator.operator)
-    print(f"Click Version: {click.__version__}")
-    print(f"Python Version: {sys.version}")
+    click.echo(f"Click Version: {click.__version__}")
+    click.echo(f"Python Version: {sys.version}")
     _commands = {
-        "addon-install": addon.addon_install,
-        "addon-uninstall": addon.addon_uninstall,
-        "operator-install": operator.operator_install,
-        "operator-uninstall": operator.operator_uninstall,
+        "addon": {
+            "install": addon.install,
+            "uninstall": addon.uninstall,
+        },
+        "operator": {
+            "install": operator.install,
+            "uninstall": operator.uninstall,
+        },
     }
+    _type = sys.argv[1]
+    _type_commands = _commands.get(_type)
+    if not _type_commands:
+        click.echo(f"Available commands are: {'/'.join(_commands.keys())}\n")
+        raise click.Abort()
+
     user_help_command = [ar.strip() for ar in sys.argv[-2:]]
-    sub_command = _commands.get(user_help_command[0])
+    sub_command = _type_commands.get(user_help_command[0])
     if user_help_command[-1] == "--help" and sub_command:
         with click.Context(sub_command) as ctx:
             click.echo(sub_command.get_help(ctx))
