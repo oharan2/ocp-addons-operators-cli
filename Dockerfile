@@ -11,4 +11,4 @@ RUN python3 -m pip install pip --upgrade \
     && poetry install \
     && poetry export --without-hashes -n
 
-ENTRYPOINT ["poetry", "run", "python", "cli/cli.py"]
+ENTRYPOINT ["poetry", "run", "python", "app/cli.py"]

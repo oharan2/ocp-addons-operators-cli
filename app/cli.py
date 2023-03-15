@@ -26,17 +26,24 @@ if __name__ == "__main__":
             "uninstall": operator.uninstall,
         },
     }
-    _type = sys.argv[1]
-    _type_commands = _commands.get(_type)
-    if not _type_commands:
-        click.echo(f"Available commands are: {'/'.join(_commands.keys())}\n")
-        raise click.Abort()
+    user_args = sys.argv
+    if len(user_args) > 1:
+        _type = user_args[1]
+        if _type == "--help":
+            entry_point(obj={})
+        else:
+            _type_commands = _commands.get(_type)
+            if not _type_commands:
+                click.echo(f"Available commands are: {'/'.join(_commands.keys())}\n")
+                raise click.Abort()
 
-    user_help_command = [ar.strip() for ar in sys.argv[-2:]]
-    sub_command = _type_commands.get(user_help_command[0])
-    if user_help_command[-1] == "--help" and sub_command:
-        with click.Context(sub_command) as ctx:
-            click.echo(sub_command.get_help(ctx))
+            user_help_command = [ar.strip() for ar in user_args[-2:]]
+            sub_command = _type_commands.get(user_help_command[0])
+            if user_help_command[-1] == "--help" and sub_command:
+                with click.Context(sub_command) as ctx:
+                    click.echo(sub_command.get_help(ctx))
+            else:
+                entry_point(obj={})
 
     else:
         entry_point(obj={})
