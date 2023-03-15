@@ -1,8 +1,6 @@
 ## ocp-addons-operators-cli
 CLI to install/uninstall Addons/operators on Openshift clusters.
 
-
-
 ### Container
 image locate at [ocp-addons-operators-cli](https://quay.io/repository/<place holder>/ocp-addons-operators-cli)  
 To pull the image: `podman pull quay.io/<place holder>/ocp-addons-operators-cli`
