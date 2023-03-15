@@ -1,5 +1,4 @@
 import os
-import sys
 
 import click
 from ocm_python_wrapper.cluster import TIMEOUT_30MIN, ClusterAddOn
@@ -38,7 +37,7 @@ from ocm_python_wrapper.ocm_client import OCMPythonClient
     show_default=True,
 )
 @click.pass_context
-def cli(ctx, addon, token, api_host, cluster, endpoint, timeout, debug):
+def addon(ctx, addon, token, api_host, cluster, endpoint, timeout, debug):
     """
     Command line to Install/Uninstall Addon on OCM managed cluster.
     """
@@ -58,7 +57,7 @@ def cli(ctx, addon, token, api_host, cluster, endpoint, timeout, debug):
     )
 
 
-@cli.command()
+@addon.command()
 @click.option(
     "-p",
     "--parameters",
@@ -66,7 +65,7 @@ def cli(ctx, addon, token, api_host, cluster, endpoint, timeout, debug):
     help="Addon parameters for installation. each parameter pass as id=value. multiple parameters are allowed",
 )
 @click.pass_context
-def install(ctx, parameters):
+def addon_install(ctx, parameters):
     """Install cluster Addon."""
     timeout = ctx.obj["timeout"]
     cluster_addon = ctx.obj["cluster_addon"]
@@ -82,24 +81,10 @@ def install(ctx, parameters):
     cluster_addon.install_addon(parameters=_parameters, wait_timeout=timeout)
 
 
-@cli.command()
+@addon.command()
 @click.pass_context
-def uninstall(ctx):
+def addon_uninstall(ctx):
     """Uninstall cluster Addon."""
     timeout = ctx.obj["timeout"]
     cluster_addon = ctx.obj["cluster_addon"]
     cluster_addon.uninstall_addon(wait_timeout=timeout)
-
-
-if __name__ == "__main__":
-    print(f"Click Version: {click.__version__}")
-    print(f"Python Version: {sys.version}")
-    _commands = {"install": install, "uninstall": uninstall}
-    user_help_command = [ar.strip() for ar in sys.argv[-2:]]
-    sub_command = _commands.get(user_help_command[0])
-    if user_help_command[-1] == "--help" and sub_command:
-        with click.Context(sub_command) as ctx:
-            click.echo(sub_command.get_help(ctx))
-
-    else:
-        cli(obj={})
