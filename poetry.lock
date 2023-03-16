@@ -305,7 +305,7 @@ six = "*"
 
 [[package]]
 name = "openshift-cluster-management-python-wrapper"
-version = "1.0.3"
+version = "1.0.4"
 description = "Wrapper around https://github.com/RedHatQE/openshift-cluster-management-python-client"
 category = "main"
 optional = false
@@ -851,7 +851,7 @@ openshift = [
     {file = "openshift-0.13.1.tar.gz", hash = "sha256:a060afb7565dda18b2749857867d80ab22b2f4143264519f493a9cabccc3b8a8"},
 ]
 openshift-cluster-management-python-wrapper = [
-    {file = "openshift-cluster-management-python-wrapper-1.0.3.tar.gz", hash = "sha256:0835858c94770d78fc7a65f16ac0d50228d92327af87235a43b2e1fcfee26b30"},
+    {file = "openshift-cluster-management-python-wrapper-1.0.4.tar.gz", hash = "sha256:3468577d7df21a6f210717eef85a2acff7b56e154213afb2e871fcda3441211c"},
 ]
 openshift-python-utilities = [
     {file = "openshift-python-utilities-4.13.4.tar.gz", hash = "sha256:c4f3e8b23122ef198e7579ae21118c788abf917b8edaddcd9072b42f6c2b8ada"},
