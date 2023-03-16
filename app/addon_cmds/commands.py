@@ -28,7 +28,7 @@ from ocm_python_wrapper.ocm_client import OCMPythonClient
     default=os.environ.get("OCM_TOKEN"),
 )
 @click.option("-c", "--cluster", help="Cluster name", required=True)
-@click.option("--debug", help="Enable debug logs")
+@click.option("--debug", help="Enable debug logs", is_flag=True)
 @click.option(
     "--api-host",
     help="API host",
@@ -45,6 +45,7 @@ def addon(ctx, addon, token, api_host, cluster, endpoint, timeout, debug):
     ctx.obj["timeout"] = timeout
     if debug:
         os.environ["OCM_PYTHON_WRAPPER_LOG_LEVEL"] = "DEBUG"
+        os.environ["OPENSHIFT_PYTHON_WRAPPER_LOG_LEVEL"] = "DEBUG"
 
     _client = OCMPythonClient(
         token=token,
