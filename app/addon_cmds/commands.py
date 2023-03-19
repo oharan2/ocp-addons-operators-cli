@@ -32,7 +32,7 @@ from ocm_python_wrapper.ocm_client import OCMPythonClient
 @click.option(
     "--api-host",
     help="API host",
-    default="production",
+    default="stage",
     type=click.Choice(["stage", "production"]),
     show_default=True,
 )

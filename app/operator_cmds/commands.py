@@ -45,18 +45,25 @@ def operator(ctx, kubeconfig, name, debug):
     show_default=True,
 )
 @click.option(
-    "--target-namespace",
-    help="target namespace for the operator. multiple parameters are allowed",
-    multiple=True,
+    "-s",
+    "--source",
+    help="Catalog source name install from",
+    default="redhat-operators",
+    show_default=True,
+)
+@click.option(
+    "--target-namespaces",
+    help="target namespaces for the operator. comma separated string",
 )
 @click.pass_context
-def install(ctx, channel, target_namespace):
+def install(ctx, channel, source, target_namespaces):
     """Install cluster Operator."""
     client = _client(ctx=ctx)
     name = ctx.obj["name"]
 
-    if target_namespace:
-        for namespace in target_namespace:
+    if target_namespaces:
+        _target_namespaces = target_namespaces.split(",")
+        for namespace in _target_namespaces:
             ns = Namespace(client=client, name=namespace)
             if ns.exists:
                 continue
@@ -67,7 +74,7 @@ def install(ctx, channel, target_namespace):
             client=client,
             name=name,
             namespace=name,
-            target_namespaces=list(target_namespace),
+            target_namespaces=_target_namespaces,
         ).deploy(wait=True)
     else:
         ns = Namespace(client=client, name=name)
@@ -79,7 +86,7 @@ def install(ctx, channel, target_namespace):
         name=name,
         namespace=name,
         channel=channel,
-        source="redhat-operators",
+        source=source,
         source_namespace="openshift-marketplace",
     ).deploy(wait=True)
 
