@@ -62,8 +62,7 @@ def addon(ctx, addon, token, api_host, cluster, endpoint, timeout, debug):
 @click.option(
     "-p",
     "--parameters",
-    multiple=True,
-    help="Addon parameters for installation. each parameter pass as id=value. multiple parameters are allowed",
+    help="Addon parameters for installation. each parameter pass as id=value. comma separated string",
 )
 @click.pass_context
 def install(ctx, parameters):
@@ -71,13 +70,15 @@ def install(ctx, parameters):
     timeout = ctx.obj["timeout"]
     cluster_addon = ctx.obj["cluster_addon"]
     _parameters = []
-    for parameter in parameters:
-        if "=" not in parameter:
-            click.echo(f"parameters should be id=value, got {parameter}\n")
-            raise click.Abort()
 
-        _id, _value = parameter.split("=")
-        _parameters.append({"id": _id, "value": _value})
+    if parameters:
+        for parameter in parameters.split(","):
+            if "=" not in parameter:
+                click.echo(f"parameters should be id=value, got {parameter}\n")
+                raise click.Abort()
+
+            _id, _value = parameter.split("=")
+            _parameters.append({"id": _id, "value": _value})
 
     cluster_addon.install_addon(parameters=_parameters, wait_timeout=timeout)
 
