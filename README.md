@@ -25,8 +25,7 @@ podman run quay.io/redhat_msi/ocp-addons-operators-cli \
     -a ocm-addon-test-operator \
     -c cluster-name \
     install \
-    -p has-external-resources=false \
-    -p aws-cluster-test-param=false
+    -p has-external-resources=false,aws-cluster-test-param=false
 ```
 
 #### Uninstall Addon
