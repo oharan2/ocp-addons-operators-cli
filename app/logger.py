@@ -1,7 +1,5 @@
 import logging
-import os
 from datetime import datetime
-from logging.handlers import RotatingFileHandler
 
 from colorlog import ColoredFormatter
 
@@ -36,11 +34,6 @@ def get_logger(name):
     if LOGGERS.get(name):
         return LOGGERS.get(name)
 
-    log_level = os.environ.get("OCM_PYTHON_WRAPPER_LOG_LEVEL", "INFO")
-    log_file = os.environ.get("OCM_PYTHON_WRAPPER_LOG_FILE", "")
-    if log_level not in ["DEBUG", "INFO", "WARNING", "ERROR", "CRITICAL"]:
-        raise ValueError(f"Invalid log level: {log_level}")
-
     logger_obj = logging.getLogger(name)
     log_formatter = WrapperLogFormatter(
         fmt="%(asctime)s %(name)s %(log_color)s%(levelname)s%(reset)s %(message)s",
@@ -59,16 +52,8 @@ def get_logger(name):
     console_handler.addFilter(filter=DuplicateFilter())
 
     logger_obj.addHandler(hdlr=console_handler)
-    logger_obj.setLevel(level=log_level)
+    logger_obj.setLevel(level="INFO")
     logger_obj.addFilter(filter=DuplicateFilter())
-
-    if log_file:
-        log_handler = RotatingFileHandler(
-            filename=log_file, maxBytes=100 * 1024 * 1024, backupCount=20
-        )
-        log_handler.setFormatter(fmt=log_formatter)
-        log_handler.setLevel(level=log_level)
-        logger_obj.addHandler(hdlr=log_handler)
 
     logger_obj.propagate = False
     LOGGERS[name] = logger_obj
