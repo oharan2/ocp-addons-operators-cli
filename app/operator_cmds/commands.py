@@ -1,11 +1,14 @@
 import os
 
 import click
+from constants import TIMEOUT_30MIN
+from ocp_resources.cluster_service_version import ClusterServiceVersion
 from ocp_resources.namespace import Namespace
 from ocp_resources.operator import Operator
 from ocp_resources.operator_group import OperatorGroup
 from ocp_resources.subscription import Subscription
 from ocp_utilities.infra import get_client
+from ocp_utilities.operators import wait_for_operator_install
 
 
 def _client(ctx):
@@ -60,6 +63,7 @@ def install(ctx, channel, source, target_namespaces):
     """Install cluster Operator."""
     client = _client(ctx=ctx)
     name = ctx.obj["name"]
+    _target_namespaces = None
 
     if target_namespaces:
         _target_namespaces = target_namespaces.split(",")
@@ -70,25 +74,31 @@ def install(ctx, channel, source, target_namespaces):
 
             ns.deploy(wait=True)
 
-        OperatorGroup(
-            client=client,
-            name=name,
-            namespace=name,
-            target_namespaces=_target_namespaces,
-        ).deploy(wait=True)
     else:
         ns = Namespace(client=client, name=name)
         if not ns.exists:
             ns.deploy(wait=True)
 
-    Subscription(
+    OperatorGroup(
+        client=client,
+        name=name,
+        namespace=name,
+        target_namespaces=_target_namespaces,
+    ).deploy(wait=True)
+
+    subscription = Subscription(
         client=client,
         name=name,
         namespace=name,
         channel=channel,
         source=source,
         source_namespace="openshift-marketplace",
-    ).deploy(wait=True)
+        install_plan_approval="Automatic",
+    )
+    subscription.deploy(wait=True)
+    wait_for_operator_install(
+        admin_client=client, subscription=subscription, timeout=TIMEOUT_30MIN
+    )
 
 
 @operator.command()
@@ -97,11 +107,16 @@ def uninstall(ctx):
     """Uninstall cluster Operator."""
     name = ctx.obj["name"]
     client = _client(ctx=ctx)
-    Subscription(
+    csv_name = None
+
+    subscription = Subscription(
         client=client,
         name=name,
         namespace=name,
-    ).clean_up()
+    )
+    if subscription.exists:
+        csv_name = subscription.instance.status.installedCSV
+        subscription.clean_up()
 
     OperatorGroup(
         client=client,
@@ -117,4 +132,11 @@ def uninstall(ctx):
             if ns.exists:
                 ns.clean_up()
 
-            _operator.clean_up()
+    if csv_name:
+        csv = ClusterServiceVersion(
+            client=client,
+            namespace=subscription.namespace,
+            name=csv_name,
+        )
+
+        csv.wait_deleted(timeout=60 * 10)

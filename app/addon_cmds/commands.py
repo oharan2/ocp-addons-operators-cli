@@ -1,7 +1,8 @@
 import os
 
 import click
-from ocm_python_wrapper.cluster import TIMEOUT_30MIN, ClusterAddOn
+from constants import TIMEOUT_30MIN
+from ocm_python_wrapper.cluster import ClusterAddOn
 from ocm_python_wrapper.ocm_client import OCMPythonClient
 
 
