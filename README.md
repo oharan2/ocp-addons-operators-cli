@@ -67,8 +67,7 @@ podman run quay.io/redhat_msi/ocp-addons-operators-cli \
     operator \
     --kubeconfig ~/work/CSPI/kubeconfig/rosa-myk412 \
     -n servicemeshoperator \
-    install \
-    --target-namespaces ns1,ns2,ns3
+    install
 ```
 
 #### Uninstall Operator
