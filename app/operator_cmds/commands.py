@@ -8,7 +8,7 @@ from ocp_resources.operator import Operator
 from ocp_resources.operator_group import OperatorGroup
 from ocp_resources.subscription import Subscription
 from ocp_utilities.infra import get_client
-from ocp_utilities.operators import wait_for_operator_install
+from ocp_utilities.operators import install_operator
 
 
 def _client(ctx):
@@ -17,6 +17,12 @@ def _client(ctx):
 
 @click.group()
 @click.option("--debug", help="Enable debug logs", is_flag=True)
+@click.option(
+    "--timeout",
+    help="Timeout in seconds to wait for addon to be installed/uninstalled",
+    default=TIMEOUT_30MIN,
+    show_default=True,
+)
 @click.option(
     "--kubeconfig",
     help="Path to kubeconfig file",
@@ -27,12 +33,13 @@ def _client(ctx):
 )
 @click.option("-n", "--name", help="Operator name to install/uninstall", required=True)
 @click.pass_context
-def operator(ctx, kubeconfig, name, debug):
+def operator(ctx, kubeconfig, name, debug, timeout):
     """
     Command line to Install/Uninstall Operator on OCP cluster.
     """
     ctx.ensure_object(dict)
     ctx.obj["name"] = name
+    ctx.obj["timeout"] = timeout
     ctx.obj["kubeconfig"] = kubeconfig
     if debug:
         os.environ["OCM_PYTHON_WRAPPER_LOG_LEVEL"] = "DEBUG"
@@ -63,41 +70,19 @@ def install(ctx, channel, source, target_namespaces):
     """Install cluster Operator."""
     client = _client(ctx=ctx)
     name = ctx.obj["name"]
-    _target_namespaces = None
+    timeout = ctx.obj["timeout"]
 
+    _target_namespaces = None
     if target_namespaces:
         _target_namespaces = target_namespaces.split(",")
-        for namespace in _target_namespaces:
-            ns = Namespace(client=client, name=namespace)
-            if ns.exists:
-                continue
 
-            ns.deploy(wait=True)
-
-    else:
-        ns = Namespace(client=client, name=name)
-        if not ns.exists:
-            ns.deploy(wait=True)
-
-    OperatorGroup(
-        client=client,
+    install_operator(
+        admin_client=client,
         name=name,
-        namespace=name,
-        target_namespaces=_target_namespaces,
-    ).deploy(wait=True)
-
-    subscription = Subscription(
-        client=client,
-        name=name,
-        namespace=name,
         channel=channel,
         source=source,
-        source_namespace="openshift-marketplace",
-        install_plan_approval="Automatic",
-    )
-    subscription.deploy(wait=True)
-    wait_for_operator_install(
-        admin_client=client, subscription=subscription, timeout=TIMEOUT_30MIN
+        target_namespaces=_target_namespaces,
+        timeout=timeout,
     )
 
 
@@ -107,6 +92,7 @@ def uninstall(ctx):
     """Uninstall cluster Operator."""
     name = ctx.obj["name"]
     client = _client(ctx=ctx)
+    timeout = ctx.obj["timeout"]
     csv_name = None
 
     subscription = Subscription(
@@ -139,4 +125,4 @@ def uninstall(ctx):
             name=csv_name,
         )
 
-        csv.wait_deleted(timeout=60 * 10)
+        csv.wait_deleted(timeout=timeout)
