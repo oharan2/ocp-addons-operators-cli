@@ -1,0 +1,1 @@
+TIMEOUT_30MIN = 60 * 30
