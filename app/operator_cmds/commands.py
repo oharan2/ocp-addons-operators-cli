@@ -2,13 +2,8 @@ import os
 
 import click
 from constants import TIMEOUT_30MIN
-from ocp_resources.cluster_service_version import ClusterServiceVersion
-from ocp_resources.namespace import Namespace
-from ocp_resources.operator import Operator
-from ocp_resources.operator_group import OperatorGroup
-from ocp_resources.subscription import Subscription
 from ocp_utilities.infra import get_client
-from ocp_utilities.operators import install_operator
+from ocp_utilities.operators import install_operator, uninstall_operator
 
 
 def _client(ctx):
@@ -93,36 +88,5 @@ def uninstall(ctx):
     name = ctx.obj["name"]
     client = _client(ctx=ctx)
     timeout = ctx.obj["timeout"]
-    csv_name = None
 
-    subscription = Subscription(
-        client=client,
-        name=name,
-        namespace=name,
-    )
-    if subscription.exists:
-        csv_name = subscription.instance.status.installedCSV
-        subscription.clean_up()
-
-    OperatorGroup(
-        client=client,
-        name=name,
-        namespace=name,
-    ).clean_up()
-
-    for _operator in Operator.get(dyn_client=client):
-        if _operator.name.startswith(name):
-            # operator name convention is <name>.<namespace>
-            namespace = name.split(".")[-1]
-            ns = Namespace(client=client, name=namespace)
-            if ns.exists:
-                ns.clean_up()
-
-    if csv_name:
-        csv = ClusterServiceVersion(
-            client=client,
-            namespace=subscription.namespace,
-            name=csv_name,
-        )
-
-        csv.wait_deleted(timeout=timeout)
+    uninstall_operator(admin_client=client, name=name, timeout=timeout)
