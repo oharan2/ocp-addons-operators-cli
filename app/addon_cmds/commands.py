@@ -1,4 +1,5 @@
 import ast
+import json
 import multiprocessing
 import os
 
@@ -16,6 +17,16 @@ def run_action(action, addons, parallel, timeout):
         _args = [True, timeout]
         if action == "install_addon":
             _args.insert(0, values["parameters"])
+            if cluster_addon_obj.addon_name == "managed-odh":
+                brew_pull_secret_env = "BREW_PULL_SECRET"  # pragma: allowlist secret
+                if os.getenv(brew_pull_secret_env):
+                    _args.append(json.loads(os.environ[brew_pull_secret_env]))
+                else:
+                    click.echo(
+                        f"{brew_pull_secret_env} environment variable for "
+                        f"{cluster_addon_obj.addon_name} addon install is missing"
+                    )
+                    raise click.Abort()
 
         if parallel:
             job = multiprocessing.Process(
