@@ -13,12 +13,12 @@ def run_action(action, addons, parallel, timeout, brew_token, api_host, rosa):
     for values in addons.values():
         cluster_addon_obj = values["cluster_addon"]
         addon_action_func = getattr(cluster_addon_obj, action)
-        _args = [True, timeout, rosa]
+        kwargs = {"wait": True, "wait_timeout": timeout, "rosa": rosa}
         if action == "install_addon":
-            _args.insert(0, values["parameters"])
+            kwargs["parameters"] = values["parameters"]
             if cluster_addon_obj.addon_name == "managed-odh" and api_host == "stage":
                 if brew_token:
-                    _args.append(brew_token)
+                    kwargs["brew_token"] = brew_token
                 else:
                     click.echo(
                         f"--brew-token flag for {cluster_addon_obj.addon_name} addon install is missing"
@@ -29,12 +29,12 @@ def run_action(action, addons, parallel, timeout, brew_token, api_host, rosa):
             job = multiprocessing.Process(
                 name=f"{cluster_addon_obj.addon_name}---{action}",
                 target=addon_action_func,
-                args=tuple(_args),
+                kwargs=kwargs,
             )
             jobs.append(job)
             job.start()
         else:
-            addon_action_func(*_args)
+            addon_action_func(**kwargs)
 
     failed_jobs = {}
     for _job in jobs:
