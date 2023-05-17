@@ -8,7 +8,7 @@ from ocm_python_wrapper.cluster import ClusterAddOn
 from ocm_python_wrapper.ocm_client import OCMPythonClient
 
 
-def run_action(action, addons, parallel, timeout):
+def run_action(action, addons, parallel, timeout, brew_token, api_host):
     jobs = []
     for values in addons.values():
         cluster_addon_obj = values["cluster_addon"]
@@ -16,6 +16,14 @@ def run_action(action, addons, parallel, timeout):
         _args = [True, timeout]
         if action == "install_addon":
             _args.insert(0, values["parameters"])
+            if cluster_addon_obj.addon_name == "managed-odh" and api_host == "stage":
+                if brew_token:
+                    _args.append(brew_token)
+                else:
+                    click.echo(
+                        f"--brew-token flag for {cluster_addon_obj.addon_name} addon install is missing"
+                    )
+                    raise click.Abort()
 
         if parallel:
             job = multiprocessing.Process(
@@ -71,6 +79,16 @@ def run_action(action, addons, parallel, timeout):
     required=True,
     default=os.environ.get("OCM_TOKEN"),
 )
+@click.option(
+    "--brew-token",
+    help="""
+    \b
+    Brew token (only needed when api-host is stage and addon is managed-odh).
+    Default value is taken from environment variable, else will be taken from --brew-token flag.
+    """,
+    required=False,
+    default=os.environ.get("BREW_TOKEN"),
+)
 @click.option("-c", "--cluster", help="Cluster name", required=True)
 @click.option("--debug", help="Enable debug logs", is_flag=True)
 @click.option(
@@ -89,13 +107,27 @@ def run_action(action, addons, parallel, timeout):
     show_default=True,
 )
 @click.pass_context
-def addon(ctx, addons, token, api_host, cluster, endpoint, timeout, debug, parallel):
+def addon(
+    ctx,
+    addons,
+    token,
+    api_host,
+    cluster,
+    endpoint,
+    timeout,
+    debug,
+    parallel,
+    brew_token,
+):
     """
     Command line to Install/Uninstall Addons on OCM managed cluster.
     """
     ctx.ensure_object(dict)
     ctx.obj["timeout"] = timeout
     ctx.obj["parallel"] = ast.literal_eval(parallel.capitalize())
+    ctx.obj["brew_token"] = brew_token
+    ctx.obj["api_host"] = api_host
+
     if debug:
         os.environ["OCM_PYTHON_WRAPPER_LOG_LEVEL"] = "DEBUG"
         os.environ["OPENSHIFT_PYTHON_WRAPPER_LOG_LEVEL"] = "DEBUG"
@@ -142,6 +174,8 @@ def install(ctx):
         addons=ctx.obj["addons_dict"],
         parallel=ctx.obj["parallel"],
         timeout=ctx.obj["timeout"],
+        brew_token=ctx.obj["brew_token"],
+        api_host=ctx.obj["api_host"],
     )
 
 
