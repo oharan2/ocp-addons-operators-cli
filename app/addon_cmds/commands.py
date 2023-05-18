@@ -197,5 +197,7 @@ def uninstall(ctx):
         addons=ctx.obj["addons_dict"],
         parallel=ctx.obj["parallel"],
         timeout=ctx.obj["timeout"],
+        brew_token=ctx.obj["brew_token"],
+        api_host=ctx.obj["api_host"],
         rosa=ctx.obj["rosa"],
     )
