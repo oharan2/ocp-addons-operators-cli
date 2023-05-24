@@ -1,22 +1,33 @@
-import ast
 import multiprocessing
 import os
 
 import click
-from constants import TIMEOUT_30MIN, USE_API_DEFAULTS, WAIT
+from constants import TIMEOUT_30MIN
 from ocm_python_wrapper.cluster import ClusterAddOn
 from ocm_python_wrapper.ocm_client import OCMPythonClient
 from utils import extract_operator_addon_params
 
 
 def run_action(
-    action, addons, parallel, timeout, rosa, brew_token=None, api_host="stage"
+    action,
+    addons,
+    parallel,
+    timeout,
+    rosa,
+    brew_token=None,
+    api_host="stage",
+    use_api_defaults=True,
 ):
     jobs = []
     for values in addons.values():
         cluster_addon_obj = values["cluster_addon"]
         addon_action_func = getattr(cluster_addon_obj, action)
-        kwargs = {"wait": True, "wait_timeout": timeout, "rosa": rosa}
+        kwargs = {
+            "wait": True,
+            "wait_timeout": timeout,
+            "rosa": rosa,
+            "use_api_defaults": use_api_defaults,
+        }
         if action == "install_addon":
             kwargs["parameters"] = values["parameters"]
             if cluster_addon_obj.addon_name == "managed-odh" and api_host == "stage":
