@@ -32,7 +32,7 @@ python = "^3.8"
 colorlog = "*"
 openshift-python-wrapper = "*"
 openshift-python-utilities = "*"
-openshift-cluster-management-python-wrapper = "*"
+openshift-cluster-management-python-wrapper = "^1.0.20"
 click = "*"
 
 [tool.poetry.dev-dependencies]
