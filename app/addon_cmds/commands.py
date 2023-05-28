@@ -26,10 +26,10 @@ def run_action(
             "wait": True,
             "wait_timeout": timeout,
             "rosa": rosa,
-            "use_api_defaults": use_api_defaults,
         }
         if action == "install_addon":
             kwargs["parameters"] = values["parameters"]
+            kwargs["use_api_defaults"] = use_api_defaults
             if cluster_addon_obj.addon_name == "managed-odh" and api_host == "stage":
                 if brew_token:
                     kwargs["brew_token"] = brew_token
