@@ -9,23 +9,13 @@ from utils import extract_operator_addon_params
 
 
 def run_action(
-    action,
-    addons,
-    parallel,
-    timeout,
-    rosa,
-    brew_token=None,
-    api_host="stage",
+    action, addons, parallel, timeout, rosa, brew_token=None, api_host="stage"
 ):
     jobs = []
     for values in addons.values():
         cluster_addon_obj = values["cluster_addon"]
         addon_action_func = getattr(cluster_addon_obj, action)
-        kwargs = {
-            "wait": True,
-            "wait_timeout": timeout,
-            "rosa": rosa,
-        }
+        kwargs = {"wait": True, "wait_timeout": timeout, "rosa": rosa}
         if action == "install_addon":
             kwargs["parameters"] = values["parameters"]
             if cluster_addon_obj.addon_name == "managed-odh" and api_host == "stage":
