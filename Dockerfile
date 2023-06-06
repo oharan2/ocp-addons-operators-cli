@@ -1,4 +1,4 @@
-FROM python
+FROM python:3.11
 
 RUN curl -L https://mirror.openshift.com/pub/openshift-v4/clients/rosa/latest/rosa-linux.tar.gz --output /tmp/rosa-linux.tar.gz \
     && tar xvf /tmp/rosa-linux.tar.gz --no-same-owner \
