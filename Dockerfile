@@ -8,6 +8,7 @@ RUN curl -L https://mirror.openshift.com/pub/openshift-v4/clients/rosa/latest/ro
 
 COPY . /ocp-addons-operators-cli
 WORKDIR /ocp-addons-operators-cli
+RUN echo ls -la
 RUN python3 -m pip install pip --upgrade \
     && python3 -m pip install poetry \
     && poetry config cache-dir /ocp-addons-operators-cli \
