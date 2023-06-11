@@ -15,7 +15,11 @@ def run_action(
     for values in addons.values():
         cluster_addon_obj = values["cluster_addon"]
         addon_action_func = getattr(cluster_addon_obj, action)
-        kwargs = {"wait": True, "wait_timeout": timeout, "rosa": rosa}
+        kwargs = {
+            "wait": True,
+            "wait_timeout": timeout,
+            "rosa": cluster_addon_obj.addon_name in rosa,
+        }
         if action == "install_addon":
             kwargs["parameters"] = values["parameters"]
             if cluster_addon_obj.addon_name == "managed-odh" and api_host == "stage":
@@ -56,7 +60,7 @@ def run_action(
     help="""
     \b
     Addons to install.
-    Format to pass is 'addon_name_1|param1=1,param2=2'\b
+    Format to pass is 'addon_name_1|param1=1,param2=2\'
     """,
     required=True,
     multiple=True,
@@ -109,9 +113,14 @@ def run_action(
 )
 @click.option(
     "--rosa",
-    help="Install/uninstall addons via ROSA cli",
-    show_default=True,
-    is_flag=True,
+    help="""
+    \b
+    Install/uninstall addons via ROSA cli.
+    Specify addon with addon name.
+    Example:
+    \'-a addon_name_1 -a addon_name_2 --rosa addon_name_2\'; Addon_name_2 will be installed with ROSA.
+    """,
+    multiple=True,
 )
 @click.pass_context
 def addon(
@@ -135,7 +144,7 @@ def addon(
     ctx.obj["parallel"] = parallel
     ctx.obj["brew_token"] = brew_token
     ctx.obj["api_host"] = api_host
-    ctx.obj["rosa"] = rosa
+    ctx.obj["rosa"] = list(rosa)
 
     if debug:
         os.environ["OCM_PYTHON_WRAPPER_LOG_LEVEL"] = "DEBUG"
@@ -159,6 +168,12 @@ def addon(
         )
 
     ctx.obj["addons_dict"] = addons_dict
+    if any(addon_name not in addons_dict.keys() for addon_name in rosa):
+        click.echo(
+            "An addon indicated with --rosa does not match any of addons names that were given.\nPlease fix "
+            "typo."
+        )
+        raise click.Abort()
 
 
 @addon.command()
