@@ -170,11 +170,11 @@ def addon(
     ctx.obj["addons_dict"] = addons_dict
     if any(addon_name not in addons_dict.keys() for addon_name in rosa):
         click.echo(
-            "An addon indicated with --rosa does not match any of addons names that were given."
-            "\nAddons to install/uninstall: "
-            + ", ".join(addons_dict.keys())
-            + "\nAddons to use with rosa: "
-            + ", ".join(rosa)
+            f"""
+An addon indicated with --rosa does not match any of addons names that were given.
+Addons to install/uninstall: {', '.join(addons_dict.keys())}.
+Addons to use with rosa: {', '.join(rosa)}.
+"""
         )
         raise click.Abort()
 
