@@ -60,7 +60,7 @@ def run_action(
     help="""
     \b
     Addons to install.
-    Format to pass is 'addon_name_1|param1=1,param2=2\'
+    Format to pass is 'addon_name_1|param1=1,param2=2'
     """,
     required=True,
     multiple=True,
@@ -118,7 +118,7 @@ def run_action(
     Install/uninstall addons via ROSA cli.
     Specify addon with addon name.
     Example:
-    \'-a addon_name_1 -a addon_name_2 --rosa addon_name_2\'; Addon_name_2 will be installed with ROSA.
+    '-a addon_name_1 -a addon_name_2 --rosa addon_name_2'; Addon_name_2 will be installed with ROSA.
     """,
     multiple=True,
 )
@@ -144,7 +144,7 @@ def addon(
     ctx.obj["parallel"] = parallel
     ctx.obj["brew_token"] = brew_token
     ctx.obj["api_host"] = api_host
-    ctx.obj["rosa"] = list(rosa)
+    ctx.obj["rosa"] = rosa
 
     if debug:
         os.environ["OCM_PYTHON_WRAPPER_LOG_LEVEL"] = "DEBUG"
@@ -170,8 +170,11 @@ def addon(
     ctx.obj["addons_dict"] = addons_dict
     if any(addon_name not in addons_dict.keys() for addon_name in rosa):
         click.echo(
-            "An addon indicated with --rosa does not match any of addons names that were given.\nPlease fix "
-            "typo."
+            "An addon indicated with --rosa does not match any of addons names that were given."
+            "\nAddons to install/uninstall: "
+            + ", ".join(addons_dict.keys())
+            + "\nAddons to use with rosa: "
+            + ", ".join(rosa)
         )
         raise click.Abort()
 

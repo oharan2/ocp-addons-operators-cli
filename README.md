@@ -91,6 +91,19 @@ podman run quay.io/redhat_msi/ocp-addons-operators-cli \
     uninstall
 ```
 
+#### ROSA cli
+Use --rosa addon_name to specify which addon to install/uninstall with ROSA cli.
+```
+podman run quay.io/redhat_msi/ocp-addons-operators-cli \
+    addon \
+    -t $OCM_TOKEN \
+    -a ocm-addon-test-operator \
+    -a ocm-addon-test-operator-2 \
+    -c cluster-name \
+    --rosa ocm-addon-test-operator-2 \
+    install
+```
+
 ### Operators
 #### Install Operator
 ##### One operator
