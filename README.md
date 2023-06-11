@@ -103,6 +103,7 @@ podman run quay.io/redhat_msi/ocp-addons-operators-cli \
     --rosa ocm-addon-test-operator-2 \
     install
 ```
+Only addon `ocm-addon-test-operator-2` will be installed with ROSA cli.
 
 ### Operators
 #### Install Operator
