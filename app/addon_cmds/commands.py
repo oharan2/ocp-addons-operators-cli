@@ -6,7 +6,7 @@ from constants import TIMEOUT_30MIN
 from ocm_python_client.exceptions import NotFoundException
 from ocm_python_wrapper.cluster import ClusterAddOn
 from ocm_python_wrapper.ocm_client import OCMPythonClient
-from utils import extract_operator_addon_params
+from utils import extract_operator_addon_params, set_debug_os_flags
 
 
 def run_action(
@@ -149,8 +149,7 @@ def addon(
     ctx.obj["rosa"] = _rosa
 
     if debug:
-        os.environ["OCM_PYTHON_WRAPPER_LOG_LEVEL"] = "DEBUG"
-        os.environ["OPENSHIFT_PYTHON_WRAPPER_LOG_LEVEL"] = "DEBUG"
+        set_debug_os_flags()
 
     addons_dict = {}
     for _addon in addons:
