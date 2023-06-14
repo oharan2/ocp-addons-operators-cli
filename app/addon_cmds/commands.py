@@ -174,9 +174,9 @@ Addons to use with rosa: {rosa}.
 
     if _rosa:
         if not is_logged_in():
-            click.echo("ROSA cli required for execution, logging in.")
+            click.echo("ROSA cli required for execution; logging in.")
             rosa_login_logout(
-                stage_env="true" if api_host == "stage" else "", token=token
+                stage_env=True if api_host == "stage" else False, token=token
             )
 
     _client = OCMPythonClient(
