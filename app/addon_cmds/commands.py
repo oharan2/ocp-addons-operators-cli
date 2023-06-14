@@ -6,6 +6,7 @@ from constants import TIMEOUT_30MIN
 from ocm_python_client.exceptions import NotFoundException
 from ocm_python_wrapper.cluster import ClusterAddOn
 from ocm_python_wrapper.ocm_client import OCMPythonClient
+from rosa.cli import is_logged_in, rosa_login_logout
 from utils import extract_operator_addon_params, set_debug_os_flags
 
 
@@ -170,6 +171,13 @@ Addons to use with rosa: {rosa}.
 """
         )
         raise click.Abort()
+
+    if _rosa:
+        if not is_logged_in():
+            click.echo("ROSA cli required for execution, logging in.")
+            rosa_login_logout(
+                stage_env="true" if api_host == "stage" else "", token=token
+            )
 
     _client = OCMPythonClient(
         token=token,
