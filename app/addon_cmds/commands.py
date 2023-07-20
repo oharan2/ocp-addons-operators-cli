@@ -33,7 +33,7 @@ def extract_addon_params(addon_dict):
     return resource_parameters
 
 
-def run_action(action, addons_tuple, parallel, brew_token=None, api_host="stage"):
+def run_action(action, addons_tuple, parallel, brew_token=None):
     jobs = []
     for _addon in addons_tuple:
         cluster_addon_obj = _addon["cluster_addon"]
@@ -45,14 +45,8 @@ def run_action(action, addons_tuple, parallel, brew_token=None, api_host="stage"
         }
         if action == "install_addon":
             kwargs["parameters"] = _addon["parameters"]
-            if cluster_addon_obj.addon_name == "managed-odh" and api_host == "stage":
-                if brew_token:
-                    kwargs["brew_token"] = brew_token
-                else:
-                    click.echo(
-                        f"--brew-token flag for {cluster_addon_obj.addon_name} addon install is missing"
-                    )
-                    raise click.Abort()
+            if brew_token:
+                kwargs["brew_token"] = brew_token
 
         if parallel:
             job = multiprocessing.Process(
@@ -112,7 +106,7 @@ Optional parameters:
     "--brew-token",
     help="""
     \b
-    Brew token (needed to install managed-odh addon in stage).
+    Brew token (can be set to install managed-odh addon in stage).
     Default value is taken from environment variable, else will be taken from --brew-token flag.
     """,
     required=False,
