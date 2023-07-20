@@ -182,7 +182,6 @@ def install(ctx):
         addons_tuple=ctx.obj["addons_tuple"],
         parallel=ctx.obj["parallel"],
         brew_token=ctx.obj["brew_token"],
-        api_host=ctx.obj["api_host"],
     )
 
 
