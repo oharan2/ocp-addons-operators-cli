@@ -34,6 +34,7 @@ colorlog = "^6.7.0"
 openshift-python-wrapper = "^4.14.1"
 openshift-python-utilities = "^4.14.2"
 click = "^8.1.4"
+rosa-python-client = "^1.0.28"
 
 [tool.poetry.dev-dependencies]
 ipython = "*"
