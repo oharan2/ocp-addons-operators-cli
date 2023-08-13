@@ -48,7 +48,9 @@ def main():
         else:
             _type_commands = _commands.get(_type)
             if not _type_commands:
-                click.echo(f"Available commands are: {'/'.join(_commands.keys())}\n")
+                click.secho(
+                    f"Available commands are: {'/'.join(_commands.keys())}\n", fg="red"
+                )
                 raise click.Abort()
 
             user_help_command = [arg.strip() for arg in user_args[-2:]]
